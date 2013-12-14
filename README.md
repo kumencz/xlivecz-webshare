@@ -17,7 +17,7 @@ Install:
 
 In file xLiveCZ/category/rss/nezarazene.php after:
 
-```php
+```xml
 <channel>
 	<title>Nezařazené</title>
 	<link>/channel/nezarazene-2/rss</link>
@@ -25,7 +25,7 @@ In file xLiveCZ/category/rss/nezarazene.php after:
 
 add these lines:
 
-```php
+```xml
 <item>
    <title>Webshare.cz</title>
    <link>rss_command://search</link>
