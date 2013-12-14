@@ -2,20 +2,65 @@
 // ###############################################################
 // ##                                                           ##
 // ##   http://sites.google.com/site/pavelbaco/                 ##
-// ##   Copyright (C) 2012  Pavel Bačo   (killerman)            ##
-// ##   Copyright (C) 2012  Jakub Pecháček (kumen)              ##
+// ##   Copyright (C) 2013  Pavel Bačo   (killerman)            ##
+// ##   Copyright (C) 2013  kumeni@gmail.com (kumen)            ##
 // ##                                                           ##
 // ## This file is a part of xLiveCZ, this project doesnt have  ##
 // ## any support from Xtreamer company and just be design for  ##
 // ## realtek based players										##
 // ###############################################################
 
-//$search = urlencode ($_GET["search"]);
-
 $DIR_SCRIPT_ROOT  = current(explode('xLiveCZ/', dirname(__FILE__).'/')).'xLiveCZ/';
 $HTTP_SCRIPT_ROOT = current(explode('scripts/', 'http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'/')).'scripts/';
 echo "<?xml version='1.0' encoding='utf-8' ?>\n";
 echo "<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
+
+$query= $_GET["query"];
+if($query) {
+   $queryArr = explode(',', $query);
+   $page = $queryArr[0];
+   $search = urlencode($queryArr[1]);
+   $type = $queryArr[2];
+}
+
+if($type == "find")
+{
+//set POST variables //what=test&category=&sort=&offset=0&limit=25&wst=
+$fields = array(
+    'what' => $search,
+    'category' => "video",
+    'sort' => "",
+    'offset' => $page * 25,
+    'limit' => "25",
+    'wst' => "",
+    );
+
+$url = "http://webshare.cz/api/search/";
+}else if($type == "watch")
+{
+	//set POST variables //ident=9bw451c6sv&wst=
+$fields = array(
+    'ident' => $_GET["ident"],
+    'wst' => "",
+    );
+
+$url = "http://webshare.cz/api/file_link/";
+}
+
+$fields_string = "";
+foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+rtrim($fields_string,'&');
+//open connection
+$ch = curl_init();
+curl_setopt($ch,CURLOPT_URL,$url);
+curl_setopt($ch,CURLOPT_HTTPHEADER, array('Content-length: '.strlen($fields_string),'Content-Type: application/x-www-form-urlencoded','X-Requested-With: XMLHttpRequest','Host: webshare.cz'));
+curl_setopt($ch,CURLOPT_POST,count($fields));
+curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
+//execute post
+$result=curl_exec($ch);
+curl_close($ch);
+
 ?>
 
 <script>
@@ -201,130 +246,127 @@ echo "<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
 	</item_template>
 
 <?php
-
-$query= $_GET["query"];
-if($query) {
-   $queryArr = explode(',', $query);
-   $page = $queryArr[0];
-   $search = urlencode($queryArr[1]);
-}
-
-$URL = "http://webshare.cz/api/search/";
-
-//set POST variables //what=test&category=&sort=&offset=0&limit=25&wst=
-$fields = array(
-    'what' => $search,
-    'category' => "",
-    'sort' => "",
-    'offset' => "",
-    'limit' => "25",
-    'wst' => "",
-    );
-
-//url-ify the data for the POST
-$fields_string = "";
-foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-rtrim($fields_string,'&');
-//open connection
-$ch = curl_init();
-
-$url = "http://webshare.cz/api/search/";
-//set the url, number of POST vars, POST data
-curl_setopt($ch,CURLOPT_URL,$url);
-curl_setopt($ch,CURLOPT_HTTPHEADER, array('Content-length: '.strlen($fields_string),'Content-Type: application/x-www-form-urlencoded','X-Requested-With: XMLHttpRequest','Host: webshare.cz'));
-curl_setopt($ch,CURLOPT_POST,count($fields));
-curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
-//execute post
-$result=curl_exec($ch);
-curl_close($ch);
-//echo "test".$fields_string." ".$result;
-
-
-
-echo "<channel>\n<title>Vyhledáno</title>";
-if($page > 1) {
-?>
-<item>
-<?php
-$sThisFile = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
-$url = $sThisFile."?query=".($page-1).",".$search;
-?>
-<title>Předchozí strana</title>
-<link><?php echo $url;?></link>
-<annotation>Předchozí strana</annotation>
-<durata></durata>
-<pub></pub>
-<image><?php echo $DIR_SCRIPT_ROOT; ?>image/leva.jpg</image>
-<mediaDisplay name="threePartsView"/>
-</item>
-<?php }
-
-
-
-
-$t1 = explode('<status>', $result);
-$t2 = explode('</status>', $t1[1]);
-$status = $t2[0];
-
-if($status == "OK")
+if($type == "find")
 {
-	$files = explode('<file>', $result);
-	foreach($files as $file)
-	{
-		$t1 = explode('<ident>', $file);
-		$t2 = explode('</ident>', $t1[1]);
-		$ident = $t2[0];
-
-		$t1 = explode('<name>', $file);
-		$t2 = explode('</name>', $t1[1]);
-		$name = $t2[0];
-
-		$t1 = explode('<type>', $file);
-		$t2 = explode('</type>', $t1[1]);
-		$type = $t2[0];
-
-		$t1 = explode('<img>', $file);
-		$t2 = explode('</img>', $t1[1]);
-		$img = "http://webshare.cz/".$t2[0];
-
-		$t1 = explode('<size>', $file);
-		$t2 = explode('</size>', $t1[1]);
-		$size = $t2[0]."MB";
-
-		echo "
+	echo "<channel>\n<title>Vyhledáno</title>";
+	if($page > 1) {
+		?>
 			<item>
-				<title><![CDATA[".$name."]]></title>
-				<image>".$img."</image>
-    <pub>Velikost: ".$size."</pub>
-	<link>".$HTTP_SCRIPT_ROOT."xLiveCZ/webshare.php?url=".$ident."</link>
-	</item>\n";
+		<?php
+			$sThisFile = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+			$url = $sThisFile."?query=".($page-1).",".$search;
+		?>
+			<title>Předchozí strana</title>
+			<link><?php echo $url;?></link>
+			<annotation>Předchozí strana</annotation>
+			<durata></durata>
+			<pub></pub>
+			<image><?php echo $DIR_SCRIPT_ROOT; ?>image/leva.jpg</image>
+			<mediaDisplay name="threePartsView"/>
+		</item>
+		<?php
 	}
 
-}else
+	$t1 = explode('<status>', $result);
+	$t2 = explode('</status>', $t1[1]);
+	$status = $t2[0];
+
+	if($status == "OK")
+	{
+		$files = explode('<file>', $result);
+		unset($files[0]);
+
+		foreach($files as $file)
+		{
+			$t1 = explode('<ident>', $file);
+			$t2 = explode('</ident>', $t1[1]);
+			$ident = $t2[0];
+
+			$t1 = explode('<name>', $file);
+			$t2 = explode('</name>', $t1[1]);
+			$name = $t2[0];
+
+			$t1 = explode('<type>', $file);
+			$t2 = explode('</type>', $t1[1]);
+			$type = $t2[0];
+
+			$t1 = explode('<img>', $file);
+			$t2 = explode('</img>', $t1[1]);
+			$img = "http://webshare.cz".$t2[0];
+
+			$t1 = explode('<size>', $file);
+			$t2 = explode('</size>', $t1[1]);
+			$size = $t2[0] / 1000000;
+			$size .= "MB";
+
+			echo "
+				<item>
+					<title><![CDATA[".$name."]]></title>
+					<image>".$img."</image>
+					<pub>Velikost: ".$size."</pub>
+					<durata>Formát: ".$type."</durata>
+					<link>".$HTTP_SCRIPT_ROOT."xLiveCZ/webshare.php?query=0,,watch&ident=".$ident."</link>
+				</item>\n";
+		}
+
+	?>
+	<item>
+	<?php
+	$sThisFile = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+	$url = $sThisFile."?query=".($page+1).",".$search;
+	?>
+	<title>Další strana</title>
+	<link><?php echo $url;?></link>
+	<annotation>Další strana</annotation>
+	<durata></durata>
+	<pub></pub>
+	<image><?php echo $DIR_SCRIPT_ROOT; ?>image/prava.jpg</image>
+	<mediaDisplay name="threePartsView"/>
+	</item>
+
+	<?php
+	}else
+	{
+		echo "<item>
+				<title><![CDATA[Někde nastala chyba]]></title>
+				<image></image>
+				<pub></pub>
+				<link></link>
+			</item>\n";
+	}
+}else if($type == "watch")
 {
+	echo "<channel>\n<title>Webshare.cz</title>";
 
+	$t1 = explode('<status>', $result);
+	$t2 = explode('</status>', $t1[1]);
+	$status = $t2[0];
 
+	if($status == "OK")
+	{
+		$t1 = explode('<link>', $result);
+		$t2 = explode('</link>', $t1[1]);
+		$link = $t2[0];
+
+		echo "<item>
+				<title><![CDATA[Přehrát]]></title>
+				<pubDate>Potvrďte pro začátek přehrávání</pubDate>
+				<durata>PLAY</durata>
+				<link>".$link."</link>
+			</item>\n";
+
+	}else
+	{
+		echo "<item>
+				<title><![CDATA[Někde nastala chyba]]></title>
+				<image></image>
+				<pub></pub>
+				<link></link>
+			</item>\n";
+	}
 }
 
 
 
-?>
-<item>
-<?php
-$sThisFile = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
-$url = $sThisFile."?query=".($page+1).",".$search;
-?>
-<title>Další strana</title>
-<link><?php echo $url;?></link>
-<annotation>Další strana</annotation>
-<durata></durata>
-<pub></pub>
-<image><?php echo $DIR_SCRIPT_ROOT; ?>image/prava.jpg</image>
-<mediaDisplay name="threePartsView"/>
-</item>
-<?php
-	$ItemsOut .= "</channel>\n</rss>";
-	echo $ItemsOut;
-
+	echo "</channel>\n</rss>";
 ?>
