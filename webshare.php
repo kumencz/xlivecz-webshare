@@ -21,30 +21,50 @@ if($query) {
    $page = $queryArr[0];
    $search = urlencode($queryArr[1]);
    $type = $queryArr[2];
+   $ident = $queryArr[3];
 }
 
 if($type == "find")
 {
-//set POST variables //what=test&category=&sort=&offset=0&limit=25&wst=
-$fields = array(
-    'what' => $search,
-    'category' => "video",
-    'sort' => "",
-    'offset' => $page * 25,
-    'limit' => "25",
-    'wst' => "",
-    );
+	//set POST variables //what=test&category=&sort=&offset=0&limit=25&wst=
+	$fields = array(
+		'what' => $search,
+		'category' => "video",
+		'sort' => "",
+		'offset' => $page * 25,
+		'limit' => "25",
+		'wst' => "",
+		);
 
-$url = "http://webshare.cz/api/search/";
+	$url = "http://webshare.cz/api/search/";
 }else if($type == "watch")
 {
-	//set POST variables //ident=9bw451c6sv&wst=
-$fields = array(
-    'ident' => $_GET["ident"],
-    'wst' => "",
-    );
+	$fields = array(
+		'ident' => $ident,
+		'wst' => "",
+		);
 
-$url = "http://webshare.cz/api/file_link/";
+	$url = "http://webshare.cz/api/file_info/";
+	$fields_string = "";
+	foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+	rtrim($fields_string,'&');
+	//open connection
+	$ch = curl_init();
+	curl_setopt($ch,CURLOPT_URL,$url);
+	curl_setopt($ch,CURLOPT_HTTPHEADER, array('Content-length: '.strlen($fields_string),'Content-Type: application/x-www-form-urlencoded','X-Requested-With: XMLHttpRequest','Host: webshare.cz'));
+	curl_setopt($ch,CURLOPT_POST,count($fields));
+	curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+	curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
+	//execute post
+	$info=curl_exec($ch);
+	curl_close($ch);
+
+	$fields = array(
+		'ident' => $ident,
+		'wst' => "",
+		);
+
+	$url = "http://webshare.cz/api/file_link/";
 }
 
 $fields_string = "";
@@ -150,7 +170,7 @@ curl_close($ch);
 		  <script>print(titlu); titlu;</script>
 		</text>
  <text align="center" offsetXPC="58.2" offsetYPC="0" widthPC="39.68" heightPC="52" fontSize="30" backgroundColor="130:130:130" foregroundColor="0:0:0">
-		  <script>sprintf("Uloz.to",focus-(-1));</script>
+		  <script>sprintf("webshare.cz",focus-(-1));</script>
 		</text>
 		<image  redraw="yes" offsetXPC=59 offsetYPC=1 widthPC=38 heightPC=50>
 		<script>print(img); img;</script>
@@ -249,7 +269,8 @@ curl_close($ch);
 if($type == "find")
 {
 	echo "<channel>\n<title>Vyhledáno</title>";
-	if($page > 1) {
+	if($page > 1)
+	{
 		?>
 			<item>
 		<?php
@@ -305,7 +326,7 @@ if($type == "find")
 					<image>".$img."</image>
 					<pub>Velikost: ".$size."</pub>
 					<durata>Formát: ".$type."</durata>
-					<link>".$HTTP_SCRIPT_ROOT."xLiveCZ/webshare.php?query=0,,watch&ident=".$ident."</link>
+					<link>".$HTTP_SCRIPT_ROOT."xLiveCZ/webshare.php?query=0,nic,watch,".$ident."</link>
 				</item>\n";
 		}
 
@@ -342,31 +363,64 @@ if($type == "find")
 	$t2 = explode('</status>', $t1[1]);
 	$status = $t2[0];
 
-	if($status == "OK")
+	$t1 = explode('<status>', $info);
+	$t2 = explode('</status>', $t1[1]);
+	$status_2 = $t2[0];
+
+	if($status == "OK" && $status_2 == "OK")
 	{
 		$t1 = explode('<link>', $result);
 		$t2 = explode('</link>', $t1[1]);
 		$link = $t2[0];
 
+		$t1 = explode('<name>', $info);
+		$t2 = explode('</name>', $t1[1]);
+		$name = $t2[0];
+
+		$t1 = explode('<stripe>', $info);
+		$t2 = explode('L.jpg</stripe>', $t1[1]);
+		$img = "http://webshare.cz/".$t2[0]."S.jpg";
+
+		$t1 = explode('<format>', $info);
+		$t2 = explode('</format>', $t1[1]);
+		$format = $t2[0];
+
+		$t1 = explode('<height>', $info);
+		$t2 = explode('</height>', $t1[1]);
+		$height = $t2[0];
+
+		$t1 = explode('<width>', $info);
+		$t2 = explode('</width>', $t1[1]);
+		$width = $t2[0];
+
+		$t1 = explode('<length>', $info);
+		$t2 = explode('</length>', $t1[1]);
+		$lenght = $t2[0]/60;
+
+		$t1 = explode('<fps>', $info);
+		$t2 = explode('</fps>', $t1[1]);
+		$fps = $t2[0];
+
+
 		echo "<item>
-				<title><![CDATA[Přehrát]]></title>
-				<pubDate>Potvrďte pro začátek přehrávání</pubDate>
-				<durata>PLAY</durata>
+				<title>PLAY: <![CDATA[".$name."]]></title>
 				<link>".$link."</link>
+				<image>".$img."</image>
+				<pub>".$format.": ".$width."x".$height." ".$fps."FPS</pub>
+				<durata>".$lenght."min</durata>
+				<pubDate>Potvrďte pro začátek přehrávání</pubDate>
+				<enclosure type=\"video/mp4\" url=\"".$link."\"/>
 			</item>\n";
 
 	}else
 	{
 		echo "<item>
-				<title><![CDATA[Někde nastala chyba]]></title>
+				<title>Někde nastala chyba></title>
 				<image></image>
 				<pub></pub>
 				<link></link>
 			</item>\n";
 	}
 }
-
-
-
 	echo "</channel>\n</rss>";
 ?>
