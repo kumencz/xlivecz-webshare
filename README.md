@@ -29,7 +29,7 @@ add these lines:
 <item>
    <title>Webshare.cz</title>
    <link>rss_command://search</link>
-   <search url="<?php echo $HTTP_SCRIPT_ROOT; ?>xLiveCZ/webshare.php?query=0,%s,find" />
+   <search url="<?php echo $HTTP_SCRIPT_ROOT; ?>xLiveCZ/webshare.php?query=0,%s,find," />
    <media:thumbnail url="http://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/399064_402078543214882_2126773752_a.png"/>
 </item>
 ```
