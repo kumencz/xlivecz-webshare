@@ -15,10 +15,10 @@ Install:
 ==============
 
 
-In file /scripts/xLiveCZ/category/rss/nezarazene.php
+In file /scripts/xLiveCZ/category/rss/nezarazene.php<br />
 V souboru /scripts/xLiveCZ/category/rss/nezarazene.php
 
-after:
+after:<br />
 po:
 
 ```xml
@@ -27,7 +27,7 @@ po:
    <link>/channel/nezarazene-2/rss</link>
 ```
 
-add these lines:
+add these lines:<br />
 vložte tyto řádky:
 
 ```xml
@@ -39,10 +39,10 @@ vložte tyto řádky:
 </item>
 ```
 
-Insert webshare.php file into /scripts/xLiveCZ/ directory
+Insert webshare.php file into /scripts/xLiveCZ/ directory<br />
 Vložte soubor webshare.php do složky /scripts/xLiveCZ/
 
 -> Instalation COMPLETE
 
-Watch on yours custom videos uploaded to webshare.cz on your Xtreamer with xLiveCZ installed!
+Watch on yours custom videos uploaded to webshare.cz on your Xtreamer with xLiveCZ installed!<br />
 Záměrem bylo Vám zpřístupnit Vámi nahráná rodiná videa na serveru webshare.cz, a umožit Vám tak sledování rodinných či jinných zažitků na jakémkoliv Xtreameru s xLiveCZ!
