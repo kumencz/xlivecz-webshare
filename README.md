@@ -1,7 +1,7 @@
 xLiveCZ - Webshare
 ==============
 
-Part of xLiveCZ multimedia project for czech and slovak users for mediaplyers with realtek chip
+Extension for xLiveCZ multimedia project for czech and slovak users for mediaplyers with realtek chip
 
 Big thanks to killerman !!!
 
@@ -15,15 +15,20 @@ Install:
 ==============
 
 
-In file xLiveCZ/category/rss/nezarazene.php after:
+In file /scripts/xLiveCZ/category/rss/nezarazene.php
+V souboru /scripts/xLiveCZ/category/rss/nezarazene.php
+
+after:
+po:
 
 ```xml
 <channel>
-	<title>Nezařazené</title>
-	<link>/channel/nezarazene-2/rss</link>
+   <title>Nezařazené</title>
+   <link>/channel/nezarazene-2/rss</link>
 ```
 
 add these lines:
+vložte tyto řádky:
 
 ```xml
 <item>
@@ -33,3 +38,11 @@ add these lines:
    <media:thumbnail url="http://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/s160x160/399064_402078543214882_2126773752_a.png"/>
 </item>
 ```
+
+Insert webshare.php file into /scripts/xLiveCZ/ directory
+Vložte soubor webshare.php do složky /scripts/xLiveCZ/
+
+-> Instalation COMPLETE
+
+Watch on yours custom videos uploaded to webshare.cz on your Xtreamer with xLiveCZ installed!
+Záměrem bylo Vám zpřístupnit Vámi nahráná rodiná videa na serveru webshare.cz, a umožit Vám tak sledování rodinných či jinných zažitků na jakémkoliv Xtreameru s xLiveCZ!
