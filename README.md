@@ -45,4 +45,4 @@ Vložte soubor webshare.php do složky /scripts/xLiveCZ/
 -> Instalation COMPLETE
 
 Watch on yours custom videos uploaded to webshare.cz on your Xtreamer with xLiveCZ installed!<br />
-Záměrem bylo Vám zpřístupnit Vámi nahráná rodiná videa na serveru webshare.cz, a umožit Vám tak sledování rodinných či jinných zažitků na jakémkoliv Xtreameru s xLiveCZ!
+Záměrem je Vám zpřístupnit Vámi nahraná videa na serveru webshare.cz, a umožnit Vám tak sledování rodinných či jiných zážitků na jakémkoliv Xtreameru s xLiveCZ!

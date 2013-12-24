@@ -7,7 +7,7 @@
 // ##                                                           ##
 // ## This file is a part of xLiveCZ, this project doesnt have  ##
 // ## any support from Xtreamer company and just be design for  ##
-// ## realtek based players										##
+// ## realtek based players		  			##
 // ###############################################################
 
 $DIR_SCRIPT_ROOT  = current(explode('xLiveCZ/', dirname(__FILE__).'/')).'xLiveCZ/';
@@ -48,6 +48,7 @@ if($type == "find")
 	$fields_string = "";
 	foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
 	rtrim($fields_string,'&');
+
 	//open connection
 	$ch = curl_init();
 	curl_setopt($ch,CURLOPT_URL,$url);
@@ -373,7 +374,7 @@ if($type == "find")
 		$t2 = explode('</link>', $t1[1]);
 		$link = $t2[0];
 
-		$t1 = explode('<name>', $info);
+		$t1 = explode('<name>', $result);
 		$t2 = explode('</name>', $t1[1]);
 		$name = $t2[0];
 
