@@ -7,7 +7,7 @@
 // ##                                                           ##
 // ## This file is a part of xLiveCZ, this project doesnt have  ##
 // ## any support from Xtreamer company and just be design for  ##
-// ## realtek based players		  			##
+// ## realtek based players										##
 // ###############################################################
 
 $DIR_SCRIPT_ROOT  = current(explode('xLiveCZ/', dirname(__FILE__).'/')).'xLiveCZ/';
@@ -48,7 +48,6 @@ if($type == "find")
 	$fields_string = "";
 	foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
 	rtrim($fields_string,'&');
-
 	//open connection
 	$ch = curl_init();
 	curl_setopt($ch,CURLOPT_URL,$url);
@@ -161,10 +160,10 @@ curl_close($ch);
 		      backgroundColor=0:0:0 foregroundColor=200:200:200>
 			<script>print(annotation); annotation;</script>
 		</text>
-  	<text  redraw="yes" align="left" offsetXPC="58" offsetYPC="53" widthPC="18" heightPC="5" fontSize="17" backgroundColor="10:105:150" foregroundColor="100:200:255">
+  	<text  redraw="yes" align="left" offsetXPC="58" offsetYPC="53" widthPC="13" heightPC="5" fontSize="17" backgroundColor="10:105:150" foregroundColor="100:200:255">
 		  <script>print(durata); durata;</script>
 		</text>
-  	<text  redraw="yes" align="left" offsetXPC="77" offsetYPC="53" widthPC="21" heightPC="5" fontSize="17" backgroundColor="10:105:150" foregroundColor="100:200:255">
+  	<text  redraw="yes" align="left" offsetXPC="72" offsetYPC="53" widthPC="26" heightPC="5" fontSize="17" backgroundColor="10:105:150" foregroundColor="100:200:255">
 		  <script>print(pub); pub;</script>
 		</text>
   	<text  redraw="yes" align="center" offsetXPC="0" offsetYPC="90" widthPC="100" heightPC="8" fontSize="17" backgroundColor="10:105:150" foregroundColor="100:200:255">
@@ -270,13 +269,13 @@ curl_close($ch);
 if($type == "find")
 {
 	echo "<channel>\n<title>Vyhledáno</title>";
-	if($page > 1)
+	if($page > 0)
 	{
 		?>
 			<item>
 		<?php
 			$sThisFile = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
-			$url = $sThisFile."?query=".($page-1).",".$search;
+			$url = $sThisFile."?query=".($page-1).",".$search.",find,";
 		?>
 			<title>Předchozí strana</title>
 			<link><?php echo $url;?></link>
@@ -335,7 +334,7 @@ if($type == "find")
 	<item>
 	<?php
 	$sThisFile = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
-	$url = $sThisFile."?query=".($page+1).",".$search;
+	$url = $sThisFile."?query=".($page+1).",".$search.",find,";
 	?>
 	<title>Další strana</title>
 	<link><?php echo $url;?></link>
@@ -374,7 +373,7 @@ if($type == "find")
 		$t2 = explode('</link>', $t1[1]);
 		$link = $t2[0];
 
-		$t1 = explode('<name>', $result);
+		$t1 = explode('<name>', $info);
 		$t2 = explode('</name>', $t1[1]);
 		$name = $t2[0];
 
@@ -404,12 +403,11 @@ if($type == "find")
 
 
 		echo "<item>
-				<title>PLAY: <![CDATA[".$name."]]></title>
+				<title>PLAY: ".$name."</title>
 				<link>".$link."</link>
 				<image>".$img."</image>
 				<pub>".$format.": ".$width."x".$height." ".$fps."FPS</pub>
 				<durata>".$lenght."min</durata>
-				<pubDate>Potvrďte pro začátek přehrávání</pubDate>
 				<enclosure type=\"video/mp4\" url=\"".$link."\"/>
 			</item>\n";
 
