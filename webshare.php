@@ -317,7 +317,7 @@ if($type == "find")
 
 			$t1 = explode('<size>', $file);
 			$t2 = explode('</size>', $t1[1]);
-			$size = $t2[0] / 1000000;
+			$size = $t2[0] / 1024 / 1024;
 			$size .= "MB";
 
 			echo "
